@@ -1,0 +1,157 @@
+<html>
+<html lang="en">
+  <head>
+    <title>Create a bitcoin wallet</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   
+    <script
+        type="text/javascript"
+        src="https://unpkg.com/bsv@1.5.3/bsv.min.js">
+    </script>
+   
+    <script
+        type="text/javascript"
+        src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js">
+    </script>
+
+    <script
+        type="text/javascript"
+        src="https://unpkg.com/axios/dist/axios.min.js">
+    </script>
+
+    <script
+        type="text/javascript"
+        src="https://unpkg.com/bsv@1.5.3/bsv-mnemonic.min.js">
+    </script>
+   
+   
+  </head>
+  <body>
+     
+      <div id="block1">
+           <h1>Your Public Key is:</h1>
+           <p id="pubText"> </p>
+      </div>
+       <div id="block2">
+           <h1>Your Address is:</h1>
+           <p id="addressText"> </p>
+      </div>
+     
+      <div id="block3">
+           <h1>Your QR code:</h1>
+           <p id="qrcode"></p>
+      </div>
+      <div id="block4">
+           <h1>Balance in Satoshis:</h1>
+           <p id="balance"></p>
+      </div>
+      <div id="block5">
+           <h1>Mnemonic:</h1>
+           <p id="phrase"></p>
+      </div>
+   
+    <script>
+    var bsvMnemonic = window.bsvMnemonic;
+    var words = bsvMnemonic.fromRandom();
+
+    var privKey = bsv.PrivateKey.fromRandom();
+    var pubKey = bsv.PublicKey.fromPrivateKey(privKey);
+    var address = bsv.Address.fromPublicKey(pubKey);
+
+    var p = document.querySelector("#phrase");
+    p.innerHTML = words.toString();
+   
+    var p = document.querySelector("#pubText");
+    p.innerHTML = pubKey.toString();
+   
+    var y = document.querySelector("#addressText");
+    y.innerHTML = address.toString();
+   
+    var addressCode = 'bitcoinsv:' + address;
+   
+    new QRCode(document.getElementById("qrcode"), addressCode);
+   
+    var config = {
+    method: 'get',
+    url: "https://api.whatsonchain.com/v1/bsv/main/address/" +
+    address + "/balance",
+    };
+ 
+    axios(config)
+    .then((response) => {
+      let data = JSON.stringify(response.data);
+      let p = document.getElementById("balance");
+      p.innerHTML = data;
+    })
+
+      </script>
+  </body>
+
+  <style>
+#block1 {
+    background-color: #cbcad0;
+    padding: 30px;
+    margin-bottom: 5px;
+    border: 1px dotted rgba(220, 218, 229, 0.161);
+    font-family: Times New Roman, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
+#block2 {
+    background-color: #eceaf0;
+    padding: 30px;
+    border: 1px dotted rgb(201, 186, 237);
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-bottom: 10px;
+}
+
+#block3 {
+    background-color: #6c7a7100;
+    padding: 30px;
+    border: 1px dotted rgb(22, 3, 3);
+    font-family: Times New Roman, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
+#block4 {
+    background-color: #d2cbcc;
+    padding: 30px;
+    border: 1px dotted grey;
+    font-family: Times New Roman, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
+#block5 {
+    background-color: #e6e5e8;
+    padding: 30px;
+    border: 1px dotted grey;
+    font-family: Times New Roman, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
+#privText {
+    font-family: Times New Roman, Helvetica, sans-serif;
+    word-break: break-all;
+}
+
+#addressText {
+    font-family: Times New Roman, Helvetica, sans-serif;
+    word-break: break-all;
+}
+
+#qrcode {
+    margin-top: 10px;
+}
+
+#balance {
+    margin-top: 10px;
+}
+
+#phrase {
+    margin-top: 10px;
+}
+  </style>
+</html>
